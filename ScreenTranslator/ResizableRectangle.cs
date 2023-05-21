@@ -1,6 +1,6 @@
 ﻿namespace ScreenTranslator
 {
-	internal class ResizableRectangle : Control
+	public class ResizableRectangle : Control
 	{
 		private Rectangle rectangle;
 		private RectangleHandle activeHandle;

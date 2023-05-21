@@ -28,41 +28,37 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.pictureBox = new System.Windows.Forms.PictureBox();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
+			this.pictureBox1 = new System.Windows.Forms.PictureBox();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.SuspendLayout();
 			// 
-			// pictureBox
+			// pictureBox1
 			// 
-			this.pictureBox.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-			this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.pictureBox.Location = new System.Drawing.Point(0, 0);
-			this.pictureBox.Name = "pictureBox";
-			this.pictureBox.Size = new System.Drawing.Size(800, 450);
-			this.pictureBox.TabIndex = 0;
-			this.pictureBox.TabStop = false;
-			this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
-			this.pictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
-			this.pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
-			this.pictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
+			this.pictureBox1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+			this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+			this.pictureBox1.Name = "pictureBox1";
+			this.pictureBox1.Size = new System.Drawing.Size(800, 450);
+			this.pictureBox1.TabIndex = 0;
+			this.pictureBox1.TabStop = false;
 			// 
 			// ScreenshotForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(800, 450);
-			this.Controls.Add(this.pictureBox);
+			this.Controls.Add(this.pictureBox1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 			this.Name = "ScreenshotForm";
 			this.Text = "ScreenshotForm";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
 
-		private PictureBox pictureBox;
+		private PictureBox pictureBox1;
 	}
 }

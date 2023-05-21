@@ -5,8 +5,6 @@ namespace ScreenTranslator
 	public partial class ScreenshotForm : Form
 	{
 		private Bitmap screenshot;
-		private ResizableRectangle resizableRectangle = new();
-		private Point mouseDownLocation;
 
 		public ScreenshotForm()
 		{
@@ -14,7 +12,6 @@ namespace ScreenTranslator
 			InitializeComponent();
 			PlaceDarkerScreenshot();
 		}
-
 
 		private void MakeScreenshot()
 		{
@@ -51,42 +48,7 @@ namespace ScreenTranslator
 				graphics.DrawImage(screenshot, destinationRect, 0, 0, screenshot.Width, screenshot.Height, GraphicsUnit.Pixel, imageAttributes);
 			}
 
-			this.pictureBox.Image = darkenedScreenshot;
-		}
-
-		private void pictureBox_MouseDown(object sender, MouseEventArgs e)
-		{
-			this.mouseDownLocation = e.Location;
-			Console.WriteLine($"Click! {mouseDownLocation.X} {mouseDownLocation.Y}");
-			// Start resizing the rectangle
-			resizableRectangle.StartResize(e.Location);
-		}
-
-		private void pictureBox_MouseMove(object sender, MouseEventArgs e)
-		{
-			if (resizableRectangle.IsResizing)
-			{
-				// Update the rectangle size and position as the mouse moves
-				resizableRectangle.UpdateResize(mouseDownLocation, e.Location);
-
-				// Redraw the PictureBox
-				pictureBox.Invalidate();
-			}
-		}
-
-		private void pictureBox_MouseUp(object sender, MouseEventArgs e)
-		{
-			// Finish resizing the rectangle
-			resizableRectangle.EndResize();
-
-			// Redraw the PictureBox
-			pictureBox.Invalidate();
-		}
-
-		private void pictureBox_Paint(object sender, PaintEventArgs e)
-		{
-			// Draw the resizable rectangle on the PictureBox
-			resizableRectangle.Draw(e.Graphics);
+			this.pictureBox1.Image = darkenedScreenshot;
 		}
 	}
 }
