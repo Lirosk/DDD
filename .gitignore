@@ -1,0 +1,46 @@
+# Python
+*.pyc
+__pycache__/
+venv/
+env/
+*.env
+
+# C#
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Visual Studio
+*.suo
+*.user
+*.sln.docstates
+*.bak
+*.vs/
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+_ReSharper.*
+*.resharper.user
+[Tt]humbs.db
+[Tt]est[Rr]esult*
+*.dbmdl
+*.dbproj.schemaview
+*.pfx
+*.publishsettings
+node_modules/
+packages/
+
+# VS Code
+.vscode/
+.settings/
+
+# Miscellaneous
+.DS_Store
+thumbs.db
+*.log
+*.swp
+*.tmp
+*.bak
