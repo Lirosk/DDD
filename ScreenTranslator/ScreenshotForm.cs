@@ -8,9 +8,11 @@ namespace ScreenTranslator
 
 		public ScreenshotForm()
 		{
-			MakeScreenshot();
 			InitializeComponent();
+
+			MakeScreenshot();
 			PlaceDarkerScreenshot();
+
 			this.resizablePictureBox.Screenshot = this.screenshot!;
 			this.resizablePictureBox.Worker = new();
 		}
@@ -97,12 +99,21 @@ namespace ScreenTranslator
 		{
 			if (e.KeyCode == Keys.Escape)
 			{
-				this.Close();
+				HideToTray();
+			}
+			else if (e.KeyCode == Keys.RShiftKey)
+			{
+				ShowFromTray();
 			}
 		}
 
 		private void screenshotPictureBox_MouseUp(object sender, MouseEventArgs e)
 		{
+			if (this.resizablePictureBox.Image is null)
+			{
+				return;
+			}
+
 			Bitmap bitmap = new(this.resizablePictureBox.Image);
 
 			this.resizablePictureBox.Worker.Start(bitmap,
@@ -115,6 +126,46 @@ namespace ScreenTranslator
 					this.resizablePictureBox.Image = null;
 				}
 				);
+		}
+
+		private void ScreenshotForm_FormClosed(object sender, FormClosedEventArgs e)
+		{
+			if (e.CloseReason == CloseReason.UserClosing)
+			{
+				this.WindowState = FormWindowState.Minimized;
+				this.Hide();
+			}
+		}
+
+		private void notifyIcon_DoubleClick(object sender, EventArgs e)
+		{
+			ShowFromTray();
+		}
+
+		private void HideToTray()
+		{
+			this.WindowState = FormWindowState.Minimized;
+			this.Hide();
+		}
+
+		private void ShowFromTray()
+		{
+			this.WindowState = FormWindowState.Normal;
+			this.Show();
+			this.Activate();
+		}
+
+		private void ScreenshotForm_Load(object sender, EventArgs e)
+		{
+			Screen primaryScreen = Screen.PrimaryScreen;
+			Rectangle workingArea = primaryScreen.WorkingArea;
+
+			int x = workingArea.X;
+			int y = workingArea.Y;
+			int width = workingArea.Width;
+			int height = workingArea.Height;
+
+			this.Bounds = new Rectangle(x, y, width, height);
 		}
 	}
 }

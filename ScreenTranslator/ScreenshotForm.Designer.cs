@@ -30,8 +30,11 @@ namespace ScreenTranslator
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScreenshotForm));
 			this.screenshotPictureBox = new System.Windows.Forms.PictureBox();
 			this.resizablePictureBox = new ScreenTranslator.Components.ResizablePictureBox();
+			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.screenshotPictureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.resizablePictureBox)).BeginInit();
 			this.SuspendLayout();
@@ -62,6 +65,13 @@ namespace ScreenTranslator
 			this.resizablePictureBox.Visible = false;
 			this.resizablePictureBox.Worker = null;
 			// 
+			// notifyIcon
+			// 
+			this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
+			this.notifyIcon.Text = "notifyIcon";
+			this.notifyIcon.Visible = true;
+			this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIcon_DoubleClick);
+			// 
 			// ScreenshotForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -70,9 +80,15 @@ namespace ScreenTranslator
 			this.Controls.Add(this.resizablePictureBox);
 			this.Controls.Add(this.screenshotPictureBox);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+			this.KeyPreview = true;
 			this.Name = "ScreenshotForm";
+			this.ShowInTaskbar = false;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
 			this.Text = "ScreenshotForm";
-			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+			this.TopMost = true;
+			this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ScreenshotForm_FormClosed);
+			this.Load += new System.EventHandler(this.ScreenshotForm_Load);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ScreenshotForm_KeyDown);
 			((System.ComponentModel.ISupportInitialize)(this.screenshotPictureBox)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.resizablePictureBox)).EndInit();
@@ -84,5 +100,6 @@ namespace ScreenTranslator
 
 		private PictureBox screenshotPictureBox;
 		private ResizablePictureBox resizablePictureBox;
+		private NotifyIcon notifyIcon;
 	}
 }
