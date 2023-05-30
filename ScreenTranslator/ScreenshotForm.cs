@@ -11,6 +11,8 @@ namespace ScreenTranslator
 			MakeScreenshot();
 			InitializeComponent();
 			PlaceDarkerScreenshot();
+			this.resizablePictureBox.Screenshot = this.screenshot!;
+			this.resizablePictureBox.Worker = new();
 		}
 
 		private void MakeScreenshot()
@@ -48,7 +50,71 @@ namespace ScreenTranslator
 				graphics.DrawImage(screenshot, destinationRect, 0, 0, screenshot.Width, screenshot.Height, GraphicsUnit.Pixel, imageAttributes);
 			}
 
-			this.pictureBox1.Image = darkenedScreenshot;
+			this.screenshotPictureBox.Image = darkenedScreenshot;
+		}
+
+		private Point MouseDownLocation;
+		private void screenshotPictureBox_MouseDown(object sender, MouseEventArgs e)
+		{
+			resizablePictureBox.Size = new(0, 0);
+			this.MouseDownLocation = e.Location;
+			this.resizablePictureBox.Visible = true;
+			this.resizablePictureBox.Location = e.Location;
+			this.resizablePictureBox.UpdateImage();
+		}
+
+		private void screenshotPictureBox_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left)
+			{
+
+				int x1, x2, y1, y2;
+
+				x1 = MouseDownLocation.X;
+				y1 = MouseDownLocation.Y;
+
+				x2 = e.X;
+				y2 = e.Y;
+
+				if (x1 > x2)
+				{
+					(x1, x2) = (x2, x1);
+				}
+
+				if (y1 > y2)
+				{
+					(y1, y2) = (y2, y1);
+				}
+
+				this.resizablePictureBox.Location = new(x1, y1);
+				this.resizablePictureBox.Size = new Size(x2 - x1, y2 - y1);
+
+				this.resizablePictureBox.UpdateImage();
+			}
+		}
+
+		private void ScreenshotForm_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Escape)
+			{
+				this.Close();
+			}
+		}
+
+		private void screenshotPictureBox_MouseUp(object sender, MouseEventArgs e)
+		{
+			Bitmap bitmap = new(this.resizablePictureBox.Image);
+
+			this.resizablePictureBox.Worker.Start(bitmap,
+				(result) =>
+				{
+					this.resizablePictureBox.Image = result;
+				},
+				() =>
+				{
+					this.resizablePictureBox.Image = null;
+				}
+				);
 		}
 	}
 }

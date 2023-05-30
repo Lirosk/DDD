@@ -9,9 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="ResizablePictureBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Reference Include="CustomComponents">
+      <HintPath>..\CustomComponents\bin\Debug\net6.0-windows\CustomComponents.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Components\ResizablePictureBox.cs" />
   </ItemGroup>
 
 </Project>
