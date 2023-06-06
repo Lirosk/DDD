@@ -8,10 +8,11 @@ from google.cloud.vision_v1 import types
 
 
 translator = Translator()
-client = vision.ImageAnnotatorClient()
+google_vision_client = vision.ImageAnnotatorClient()
+
 
 def read_text_from_image(image_bytes: bytes) -> typing.List[typing.Tuple[str, int, int]]:
-    response = client.annotate_image({
+    response = google_vision_client.annotate_image({
         'image': {'content': image_bytes},
         'features': [
             {
@@ -34,13 +35,13 @@ def read_text_from_image(image_bytes: bytes) -> typing.List[typing.Tuple[str, in
     return texts_with_coords
 
 
-
 def translate_texts(source_texts: typing.List[str], target_language: str) -> typing.List[str]:
     res = []
     for source_text in source_texts:
         res.append(translate_text(source_text, target_language))
 
     return res
+
 
 def translate_text(source_text: str, target_language: str) -> str:
     translation = translator.translate(source_text, dest=target_language)
