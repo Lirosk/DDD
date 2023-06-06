@@ -1,4 +1,8 @@
-﻿namespace ScreenTranslator
+﻿using System.Text;
+
+using Newtonsoft.Json.Linq;
+
+namespace ScreenTranslator
 {
 	public class ScreenTranslatorMediumWorker
 	{
@@ -43,17 +47,24 @@
 				{
 					string url = "http://127.0.0.1:8000/main/";
 
-					ByteArrayContent content = new ByteArrayContent(imageBytes);
-					content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
-					HttpResponseMessage response = await client.PostAsync(url, content);
+					var jsonContent = new JObject();
+					jsonContent["image_bytes"] = Convert.ToBase64String(imageBytes);
+
+					var jsonString = jsonContent.ToString();
+					var stringContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
+					HttpResponseMessage response = await client.PostAsync(url, stringContent);
 
 					if (response.IsSuccessStatusCode)
 					{
-						imageBytes = await response.Content.ReadAsByteArrayAsync();
+						var responseJsonString = await response.Content.ReadAsStringAsync();
+						var responseJson = JObject.Parse(responseJsonString);
+						var updatedImageBytes = Convert.FromBase64String(responseJson["image_bytes"].ToString());
 
-						using (MemoryStream ms = new(imageBytes))
+						// Update the screenshot with the updated image bytes
+						using (MemoryStream updatedMs = new MemoryStream(updatedImageBytes))
 						{
-							screenshot = new(ms);
+							screenshot = new Bitmap(updatedMs);
 						}
 
 						this.callback(screenshot);

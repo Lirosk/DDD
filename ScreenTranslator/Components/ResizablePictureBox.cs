@@ -1,4 +1,6 @@
-﻿namespace ScreenTranslator.Components
+﻿using System.Drawing.Drawing2D;
+
+namespace ScreenTranslator.Components
 {
 	public class ResizablePictureBox : MovablePictureBox
 	{
@@ -83,12 +85,24 @@
 		{
 			base.OnPaint(pe);
 
-			Pen borderPen = new Pen(Color.White);
-			borderPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+			var dashes = new (Color color, int gapAndWidth)[]
+			{
+				new(Color.White, 6), new(Color.Black, 3)
+			};
 
-			Rectangle borderRect = new Rectangle(0, 0, Width - 1, Height - 1);
+			foreach (var dash in dashes)
+			{
+				var color = dash.color;
+				var gapAndWidth = dash.gapAndWidth;
 
-			pe.Graphics.DrawRectangle(borderPen, borderRect);
+				using (Pen pen = new Pen(color))
+				{
+					pen.DashStyle = DashStyle.Dash;
+					pen.DashPattern = new float[] { gapAndWidth, gapAndWidth };
+					Rectangle borderRect = new Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
+					pe.Graphics.DrawRectangle(pen, borderRect);
+				}
+			}
 		}
 
 		protected override void OnMouseHover(EventArgs e)
@@ -106,18 +120,22 @@
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
 			base.OnMouseUp(e);
-			Bitmap bitmap = new(this.Image);
 
-			Worker.Start(bitmap,
-				(result) =>
-				{
-					this.Image = result;
-				},
-				() =>
-				{
-					this.Image = null;
-				}
-				);
+			if (this.Image is not null)
+			{
+				Bitmap bitmap = new(this.Image);
+
+				Worker.Start(bitmap,
+					(result) =>
+					{
+						this.Image = result;
+					},
+					() =>
+					{
+						this.Image = null;
+					}
+					);
+			}
 		}
 
 		private Bitmap CropBitmap(Bitmap sourceBitmap, int x, int y, int width, int height)

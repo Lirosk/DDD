@@ -35,8 +35,12 @@ namespace ScreenTranslator
 			this.screenshotPictureBox = new System.Windows.Forms.PictureBox();
 			this.resizablePictureBox = new ScreenTranslator.Components.ResizablePictureBox();
 			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+			this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.screenshotPictureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.resizablePictureBox)).BeginInit();
+			this.contextMenuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// screenshotPictureBox
@@ -67,10 +71,32 @@ namespace ScreenTranslator
 			// 
 			// notifyIcon
 			// 
+			this.notifyIcon.ContextMenuStrip = this.contextMenuStrip;
 			this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
 			this.notifyIcon.Text = "notifyIcon";
 			this.notifyIcon.Visible = true;
-			this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIcon_DoubleClick);
+			// 
+			// contextMenuStrip
+			// 
+			this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.settingsToolStripMenuItem,
+            this.exitToolStripMenuItem});
+			this.contextMenuStrip.Name = "contextMenuStrip";
+			this.contextMenuStrip.Size = new System.Drawing.Size(181, 70);
+			// 
+			// settingsToolStripMenuItem
+			// 
+			this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+			this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.settingsToolStripMenuItem.Text = "Settings";
+			this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+			// 
+			// exitToolStripMenuItem
+			// 
+			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.exitToolStripMenuItem.Text = "Exit";
+			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click_1);
 			// 
 			// ScreenshotForm
 			// 
@@ -87,11 +113,13 @@ namespace ScreenTranslator
 			this.Text = "ScreenshotForm";
 			this.TopMost = true;
 			this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScreenshotForm_FormClosing);
 			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ScreenshotForm_FormClosed);
 			this.Load += new System.EventHandler(this.ScreenshotForm_Load);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ScreenshotForm_KeyDown);
 			((System.ComponentModel.ISupportInitialize)(this.screenshotPictureBox)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.resizablePictureBox)).EndInit();
+			this.contextMenuStrip.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -101,5 +129,8 @@ namespace ScreenTranslator
 		private PictureBox screenshotPictureBox;
 		private ResizablePictureBox resizablePictureBox;
 		private NotifyIcon notifyIcon;
+		private ContextMenuStrip contextMenuStrip;
+		private ToolStripMenuItem settingsToolStripMenuItem;
+		private ToolStripMenuItem exitToolStripMenuItem;
 	}
 }
