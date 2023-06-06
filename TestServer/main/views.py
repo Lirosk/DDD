@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import traceback
 from rest_framework.generics import GenericAPIView
@@ -5,16 +6,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from PIL import Image
 import io
-from .OCR import OCR
 from . import serializers
 from . import utils
 
+loop = asyncio.new_event_loop()
+
 class EntryPointAPIView(GenericAPIView):
     serializer_class = serializers.EntryPointSerializer
-
-    def get(self, request):
-        return Response('ASAFEEFW')
-    
 
     def post(self, request):
         print('post')
@@ -25,7 +23,8 @@ class EntryPointAPIView(GenericAPIView):
 
             image_bytes = base64.b64decode(serializer.validated_data['image_bytes'])
 
-            text_with_coords = OCR.read_text_from_image(image_bytes)
+            text_with_coords = utils.read_text_from_image(image_bytes)
+            translated_texts = utils.translate_texts(list(map(lambda x: x[0], text_with_coords)), 'ru')
 
             result_image_bytes = utils.remove_texts(image_bytes, text_with_coords)
 
