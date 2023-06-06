@@ -1,0 +1,19 @@
+# Функция для обработки нажатия Сг1+\
+def handle_paste(event):
+# Получение изображения из буфера обмена
+image = ImageGrab.grabclipboard()
+# Если изображение существует и является изображением
+if image and isinstance(image, Image.Image):
+# Определение размеров окна и изображения
+window_width = 499
+window_height = 309
+image_width, image_height = image.size
+# Масштабирование изображения в соответствии с размерами окна
+scale = min(window_width / image_width, window_height / image_height)
+new_width = int(image_width * scale)
+new_height = int(image_height * scale)
+resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
+# Отображение изображения в окне
+photo = ImageTk.PhotoImage(resized_image)
+tee ТАРА panties (imeceenhnten)
+
