@@ -23,16 +23,18 @@ class EntryPointAPIView(GenericAPIView):
 
             image_bytes = base64.b64decode(serializer.validated_data['image_bytes'])
 
-            text_with_coords = utils.read_text_from_image(image_bytes)
-            translated_texts = utils.translate_texts(list(map(lambda x: x[0], text_with_coords)), 'ru')
+            texts_with_coords = utils.recognize_text_from_image(image_bytes)
+            
+            translated_texts = utils.translate_texts(list(map(lambda x: x[0], texts_with_coords)), 'ru')
+            image_bytes = utils.remove_texts(image_bytes, texts_with_coords, translated_texts)
+            image_bytes = utils.place_texts_into_image(image_bytes, texts_with_coords, translated_texts)
 
-            result_image_bytes = utils.remove_texts(image_bytes, text_with_coords)
-
-            base64_image = base64.b64encode(result_image_bytes).decode('utf-8')
+            base64_image = base64.b64encode(image_bytes).decode('utf-8')
 
             response_data = {
                 'image_bytes': base64_image,
-                'recognized_texts': text_with_coords
+                'recognized_texts': texts_with_coords,
+                'translated_texts': translated_texts
             }
 
             return Response(data=response_data, status=status.HTTP_200_OK)

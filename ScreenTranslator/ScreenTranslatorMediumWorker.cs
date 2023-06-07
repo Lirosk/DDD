@@ -12,7 +12,7 @@ namespace ScreenTranslator
 		private Task task;
 		private CancellationTokenSource cts;
 
-		public delegate void Callback(Bitmap result);
+		public delegate void Callback(Bitmap result, List<RecognizedText> recognizedTexts, List<string> translatedTexts);
 
 		public void Start(Bitmap screenshot, Callback callback, Action errorCallback)
 		{
@@ -61,13 +61,34 @@ namespace ScreenTranslator
 						var responseJson = JObject.Parse(responseJsonString);
 						var updatedImageBytes = Convert.FromBase64String(responseJson["image_bytes"].ToString());
 
+						List<RecognizedText> recognizedTexts = new();
+
+						JArray texts = (JArray)responseJson["recognized_texts"]!;
+						foreach (JToken recognizedTextToken in texts)
+						{
+							var recognizedTextObject = recognizedTextToken.ToList<Object>()!;
+							var text = recognizedTextObject[0].ToString();
+							var coordinates = new List<int[]>();
+
+							for (int i = 1; i < 3; i++)
+							{
+								var coordObj = recognizedTextObject[i];
+								var coord = ((JArray)coordObj).ToObject<int[]>();
+								coordinates.Add(coord);
+							}
+
+							recognizedTexts.Add(new RecognizedText { Text = text, Coordinates = coordinates });
+						}
+
+						var translatedTexts = ((JArray)responseJson["translated_texts"]!).Select<JToken, string>((token) => token.ToObject<string>()!).ToList();
+
 						// Update the screenshot with the updated image bytes
 						using (MemoryStream updatedMs = new MemoryStream(updatedImageBytes))
 						{
 							screenshot = new Bitmap(updatedMs);
 						}
 
-						this.callback(screenshot);
+						this.callback(screenshot, recognizedTexts, translatedTexts);
 					}
 					else
 					{

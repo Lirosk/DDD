@@ -15,6 +15,9 @@ namespace ScreenTranslator.Components
 		private readonly ResizeHandler resizeHandlerSW;
 		private readonly ResizeHandler resizeHandlerW;
 
+		public ScreenTranslatorMediumWorker.Callback SuccessfulCallback { get; set; }
+		public Action UnsuccessfullCallback { get; set; }
+
 		public ScreenTranslatorMediumWorker Worker { get; set; }
 
 		public ResizablePictureBox() : base()
@@ -126,14 +129,8 @@ namespace ScreenTranslator.Components
 				Bitmap bitmap = new(this.Image);
 
 				Worker.Start(bitmap,
-					(result) =>
-					{
-						this.Image = result;
-					},
-					() =>
-					{
-						this.Image = null;
-					}
+					this.SuccessfulCallback,
+					this.UnsuccessfullCallback
 					);
 			}
 		}

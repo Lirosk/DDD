@@ -8,15 +8,31 @@ namespace ScreenTranslator
 	{
 		private Bitmap screenshot;
 		private FormWindowState previousWindowState = FormWindowState.Normal;
+		private List<RecognizedText> recognizedTexts;
+		private List<string> translatedTexts;
+
 
 		public ScreenshotForm()
 		{
 			InitializeComponent();
 
-			//MakeScreenshot();
-			//PlaceDarkerScreenshot();
-
 			this.resizablePictureBox.Worker = new();
+			this.resizablePictureBox.SuccessfulCallback = this.AfterSuccessfulResponse;
+			this.resizablePictureBox.UnsuccessfullCallback = this.AfterUnsuccessfulResponse;
+		}
+
+		private void AfterSuccessfulResponse(Bitmap resultImage, List<RecognizedText> recognizedTexts, List<string> translatedTexts)
+		{
+			this.resizablePictureBox.Image = resultImage;
+			this.recognizedTexts = recognizedTexts;
+			this.translatedTexts = translatedTexts;
+		}
+
+		private void AfterUnsuccessfulResponse()
+		{
+			this.resizablePictureBox.Image = null;
+			this.recognizedTexts = null;
+			this.translatedTexts = null;
 		}
 
 		private void MakeScreenshot()
@@ -114,6 +130,16 @@ namespace ScreenTranslator
 				ShowFromTray();
 				e.Handled = true;
 			}
+			else if (e.KeyCode == Keys.C && e.Control)
+			{
+				Clipboard.SetText(string.Join(' ', this.translatedTexts));
+				e.Handled = true;
+			}
+			else if (e.KeyCode == Keys.X && e.Control)
+			{
+				Clipboard.SetText(string.Join(' ', this.recognizedTexts.Select(obj => obj.Text)));
+				e.Handled = true;
+			}
 		}
 
 		private void screenshotPictureBox_MouseUp(object sender, MouseEventArgs e)
@@ -126,14 +152,8 @@ namespace ScreenTranslator
 			Bitmap bitmap = new(this.resizablePictureBox.Image);
 
 			this.resizablePictureBox.Worker.Start(bitmap,
-				(result) =>
-				{
-					this.resizablePictureBox.Image = result;
-				},
-				() =>
-				{
-					this.resizablePictureBox.Image = null;
-				}
+				this.AfterSuccessfulResponse,
+				this.AfterUnsuccessfulResponse
 				);
 		}
 
@@ -162,8 +182,6 @@ namespace ScreenTranslator
 			previousWindowState = this.WindowState;
 			this.WindowState = FormWindowState.Minimized;
 			this.Hide();
-
-			//this.ShowInTaskbar = false;
 		}
 
 		private void ShowFromTray()
@@ -185,7 +203,6 @@ namespace ScreenTranslator
 			this.Show();
 			this.Activate();
 
-			//this.ShowInTaskbar = true;
 			this.TopLevel = true;
 		}
 
@@ -214,11 +231,6 @@ namespace ScreenTranslator
 
 		private void ScreenshotForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			//if ((Control.ModifierKeys & Keys.Alt) != 0 && e.CloseReason == CloseReason.UserClosing)
-			//{
-			//	e.Cancel = true;
-			//}
-
 			UnregisterKeyboardHook();
 		}
 
@@ -227,17 +239,13 @@ namespace ScreenTranslator
 			ShowFromTray();
 		}
 
-		// Define the key code for the right Shift key
 		private const int VK_RSHIFT = 0xA1;
 
-		// Define the delegate for the keyboard hook callback
 		private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
 
-		// Define the keyboard hook handle and callback
 		private IntPtr hookHandle;
 		private LowLevelKeyboardProc hookCallback;
 
-		// Register the keyboard hook
 		private void RegisterKeyboardHook()
 		{
 			hookCallback = KeyboardHookCallback;
@@ -248,13 +256,11 @@ namespace ScreenTranslator
 			}
 		}
 
-		// Unregister the keyboard hook
 		private void UnregisterKeyboardHook()
 		{
 			UnhookWindowsHookEx(hookHandle);
 		}
 
-		// Handle the keyboard events
 		private IntPtr KeyboardHookCallback(int nCode, IntPtr wParam, IntPtr lParam)
 		{
 			if (nCode >= 0 && wParam == (IntPtr)WM_KEYDOWN)
@@ -262,10 +268,8 @@ namespace ScreenTranslator
 				int vkCode = Marshal.ReadInt32(lParam);
 				if (vkCode == VK_RSHIFT)
 				{
-					// Right Shift key is pressed
 					ShowFromTray();
 
-					// Suppress the default behavior of the Shift key press
 					return (IntPtr)1;
 				}
 			}
@@ -273,11 +277,9 @@ namespace ScreenTranslator
 			return CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
 		}
 
-		// Define the constants for the keyboard hook
 		private const int WH_KEYBOARD_LL = 13;
 		private const int WM_KEYDOWN = 0x0100;
 
-		// Import the necessary WinAPI functions
 		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
 		private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
