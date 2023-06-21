@@ -20,19 +20,21 @@ namespace ScreenTranslator.Components
 
 		public ScreenTranslatorMediumWorker Worker { get; set; }
 
+		public ScreenshotForm Owner { get; set; }
+
 		public ResizablePictureBox() : base()
 		{
 			var (w, h, s) = (this.Width, this.Height, ResizeHandler.StandardSize);
 
-			resizeHandlerW = new(0, (h - s) / 2, Cursors.SizeWE, (sender) => this.HandleResizeW(sender), blockDX: true, blockDY: true);
-			resizeHandlerN = new(w / 2, 0, Cursors.SizeNS, (sender) => this.HandleResizeN(sender), blockDX: true, blockDY: true);
-			resizeHandlerS = new(w / 2, h - s, Cursors.SizeNS, (sender) => this.HandleResizeS(sender), blockDX: true);
-			resizeHandlerE = new(w - s, (h - s) / 2, Cursors.SizeWE, (sender) => this.HandleResizeE(sender), blockDY: true);
+			resizeHandlerW = new(0, (h - s) / 2, Cursors.SizeWE, (sender) => { this.HandleResizeW(sender); this.Owner?.StartImageProcessing(); }, blockDX: true, blockDY: true);
+			resizeHandlerN = new(w / 2, 0, Cursors.SizeNS, (sender) => { this.HandleResizeN(sender); this.Owner?.StartImageProcessing(); }, blockDX: true, blockDY: true);
+			resizeHandlerS = new(w / 2, h - s, Cursors.SizeNS, (sender) => { this.HandleResizeS(sender); this.Owner?.StartImageProcessing(); }, blockDX: true);
+			resizeHandlerE = new(w - s, (h - s) / 2, Cursors.SizeWE, (sender) => { this.HandleResizeE(sender); this.Owner?.StartImageProcessing(); }, blockDY: true);
 
-			resizeHandlerSE = new(w - s, h - s, Cursors.SizeNWSE, (sender) => { this.HandleResizeE(sender, true); this.HandleResizeS(sender); });
-			resizeHandlerSW = new(0, h - s, Cursors.SizeNESW, (sender) => { this.HandleResizeS(sender, true); this.HandleResizeW(sender); }, blockDX: true);
-			resizeHandlerNE = new(w - s, 0, Cursors.SizeNESW, (sender) => { this.HandleResizeE(sender, true); this.HandleResizeN(sender); }, blockDY: true);
-			resizeHandlerNW = new(0, 0, Cursors.SizeNWSE, (sender) => { this.HandleResizeN(sender, true); this.HandleResizeW(sender); }, blockDX: true, blockDY: true);
+			resizeHandlerSE = new(w - s, h - s, Cursors.SizeNWSE, (sender) => { this.HandleResizeE(sender, true); this.HandleResizeS(sender); this.Owner?.StartImageProcessing(); });
+			resizeHandlerSW = new(0, h - s, Cursors.SizeNESW, (sender) => { this.HandleResizeS(sender, true); this.HandleResizeW(sender); this.Owner?.StartImageProcessing(); }, blockDX: true);
+			resizeHandlerNE = new(w - s, 0, Cursors.SizeNESW, (sender) => { this.HandleResizeE(sender, true); this.HandleResizeN(sender); this.Owner?.StartImageProcessing(); }, blockDY: true);
+			resizeHandlerNW = new(0, 0, Cursors.SizeNWSE, (sender) => { this.HandleResizeN(sender, true); this.HandleResizeW(sender); this.Owner?.StartImageProcessing(); }, blockDX: true, blockDY: true);
 
 			ResizeHandler[] resizeHandlers = { resizeHandlerNW, resizeHandlerW, resizeHandlerSW, resizeHandlerN, resizeHandlerS, resizeHandlerNE, resizeHandlerE, resizeHandlerSE };
 
@@ -55,7 +57,6 @@ namespace ScreenTranslator.Components
 			}
 
 			this.Image = CropBitmap(screenshot, Left, Top, Width, Height);
-			//this.BackgroundImage = CropBitmap(screenshot, Left, Top, Width, Height);
 		}
 
 		protected override void OnResize(EventArgs e)
@@ -124,15 +125,7 @@ namespace ScreenTranslator.Components
 		{
 			base.OnMouseUp(e);
 
-			if (this.Image is not null)
-			{
-				Bitmap bitmap = new(this.Image);
-
-				Worker.Start(bitmap,
-					this.SuccessfulCallback,
-					this.UnsuccessfullCallback
-					);
-			}
+			this.Owner.StartImageProcessing();
 		}
 
 		private Bitmap CropBitmap(Bitmap sourceBitmap, int x, int y, int width, int height)

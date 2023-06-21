@@ -11,14 +11,34 @@ namespace ScreenTranslator
 		private List<RecognizedText> recognizedTexts;
 		private List<string> translatedTexts;
 
-
 		public ScreenshotForm()
 		{
 			InitializeComponent();
 
+			this.resizablePictureBox.Owner = this;
 			this.resizablePictureBox.Worker = new();
 			this.resizablePictureBox.SuccessfulCallback = this.AfterSuccessfulResponse;
 			this.resizablePictureBox.UnsuccessfullCallback = this.AfterUnsuccessfulResponse;
+		}
+
+		public void StartImageProcessing()
+		{
+			this.SetWorkingState();
+
+			if (this.resizablePictureBox.Image is null)
+			{
+				return;
+			}
+
+			Bitmap bitmap = new(this.resizablePictureBox.Image);
+
+			Graphics graphics = Graphics.FromHwnd(IntPtr.Zero);
+			float dpiY = graphics.DpiY;
+
+			this.resizablePictureBox.Worker.Start(bitmap, dpiY,
+				this.AfterSuccessfulResponse,
+				this.AfterUnsuccessfulResponse
+				);
 		}
 
 		private void AfterSuccessfulResponse(Bitmap resultImage, List<RecognizedText> recognizedTexts, List<string> translatedTexts)
@@ -26,6 +46,8 @@ namespace ScreenTranslator
 			this.resizablePictureBox.Image = resultImage;
 			this.recognizedTexts = recognizedTexts;
 			this.translatedTexts = translatedTexts;
+
+			this.SetFreeState();
 		}
 
 		private void AfterUnsuccessfulResponse()
@@ -33,6 +55,8 @@ namespace ScreenTranslator
 			this.resizablePictureBox.Image = null;
 			this.recognizedTexts = null;
 			this.translatedTexts = null;
+
+			this.SetFreeState();
 		}
 
 		private void MakeScreenshot()
@@ -57,11 +81,11 @@ namespace ScreenTranslator
 				var brightness = 0.5f;
 				var colorMatrix = new ColorMatrix(new float[][]
 					{
-						new float[] { brightness, 0, 0, 0, 0},
-						new float[] { 0, brightness, 0, 0, 0},
-						new float[] { 0, 0, brightness, 0, 0},
-						new float[] { 0, 0, 0, 1, 0},
-						new float[] { 0, 0, 0, 0, 1},
+							new float[] { brightness, 0, 0, 0, 0},
+							new float[] { 0, brightness, 0, 0, 0},
+							new float[] { 0, 0, brightness, 0, 0},
+							new float[] { 0, 0, 0, 1, 0},
+							new float[] { 0, 0, 0, 0, 1},
 					});
 
 				ImageAttributes imageAttributes = new();
@@ -144,17 +168,7 @@ namespace ScreenTranslator
 
 		private void screenshotPictureBox_MouseUp(object sender, MouseEventArgs e)
 		{
-			if (this.resizablePictureBox.Image is null)
-			{
-				return;
-			}
-
-			Bitmap bitmap = new(this.resizablePictureBox.Image);
-
-			this.resizablePictureBox.Worker.Start(bitmap,
-				this.AfterSuccessfulResponse,
-				this.AfterUnsuccessfulResponse
-				);
+			this.StartImageProcessing();
 		}
 
 		private void ScreenshotForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -302,6 +316,18 @@ namespace ScreenTranslator
 		private void exitToolStripMenuItem_Click_1(object sender, EventArgs e)
 		{
 			this.Close();
+		}
+
+		private bool isWorking = false;
+
+		private void SetWorkingState()
+		{
+			this.Cursor = Cursors.WaitCursor;
+		}
+
+		private void SetFreeState()
+		{
+			this.Cursor = Cursors.Default;
 		}
 	}
 }

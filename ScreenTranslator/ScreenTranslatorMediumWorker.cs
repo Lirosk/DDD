@@ -11,10 +11,11 @@ namespace ScreenTranslator
 		private Action errorCallback;
 		private Task task;
 		private CancellationTokenSource cts;
+		private float dpiY;
 
 		public delegate void Callback(Bitmap result, List<RecognizedText> recognizedTexts, List<string> translatedTexts);
 
-		public void Start(Bitmap screenshot, Callback callback, Action errorCallback)
+		public void Start(Bitmap screenshot, float dpiY, Callback callback, Action errorCallback)
 		{
 			this.Stop();
 
@@ -23,6 +24,7 @@ namespace ScreenTranslator
 
 			this.screenshot = screenshot!;
 			this.cts = new CancellationTokenSource();
+			this.dpiY = dpiY;
 
 			task = Task.Run(StartWork, cts.Token);
 		}
@@ -49,6 +51,7 @@ namespace ScreenTranslator
 
 					var jsonContent = new JObject();
 					jsonContent["image_bytes"] = Convert.ToBase64String(imageBytes);
+					jsonContent["dpiY"] = this.dpiY;
 
 					var jsonString = jsonContent.ToString();
 					var stringContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
