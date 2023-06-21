@@ -4,7 +4,7 @@ import traceback
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from PIL import Image
+from PIL import Image, ImageDraw
 import io
 from . import serializers
 from . import utils
@@ -22,19 +22,30 @@ class EntryPointAPIView(GenericAPIView):
             serializer.is_valid(raise_exception=True)
 
             image_bytes = base64.b64decode(serializer.validated_data['image_bytes'])
+            dpiY = serializer.validated_data['dpiY']
 
             texts_with_coords = utils.recognize_text_from_image(image_bytes)
-            
-            translated_texts = utils.translate_texts(list(map(lambda x: x[0], texts_with_coords)), 'ru')
-            image_bytes = utils.remove_texts(image_bytes, texts_with_coords, translated_texts)
-            image_bytes = utils.place_texts_into_image(image_bytes, texts_with_coords, translated_texts)
+            strings_with_coords = utils.separate_texts_into_strings(texts_with_coords)
+            translated_strings = utils.translate_texts(list(map(lambda x: x[0], strings_with_coords)), 'ru')
+
+            image_bytes = utils.remove_texts(image_bytes, strings_with_coords, translated_strings)
+            image_bytes = utils.place_texts_into_image(image_bytes, dpiY, strings_with_coords, translated_strings)
+
+            image = Image.open(io.BytesIO(image_bytes))
+            draw = ImageDraw.Draw(image)
+            for text, *coords in strings_with_coords:
+                draw.rectangle(coords, outline='blue')
+
+            with io.BytesIO() as ms:
+                image.save(ms, "PNG")
+                image_bytes = ms.getvalue()
 
             base64_image = base64.b64encode(image_bytes).decode('utf-8')
 
             response_data = {
                 'image_bytes': base64_image,
                 'recognized_texts': texts_with_coords,
-                'translated_texts': translated_texts
+                'translated_texts': translated_strings
             }
 
             return Response(data=response_data, status=status.HTTP_200_OK)

@@ -4,10 +4,12 @@ from PIL import Image, ImageDraw, ImageFont
 import cv2
 import numpy as np
 import typing
-from googletrans import Translator 
+from googletrans import Translator
 from google.cloud import vision_v1 as vision
 from django.conf import settings
 import requests
+import string
+import math
 
 
 translator = Translator()
@@ -23,10 +25,10 @@ def recognize_text_from_image(image_bytes: bytes) -> typing.List[typing.Tuple[st
             },
         ]
     })
-    
+
     text_annotations = response.text_annotations
     texts_with_coords = []
-    
+
     if text_annotations:
         for annotation in text_annotations[1:]:
             description = annotation.description
@@ -34,7 +36,7 @@ def recognize_text_from_image(image_bytes: bytes) -> typing.List[typing.Tuple[st
             top_left = (vertices[0].x, vertices[0].y)
             bottom_right = (vertices[2].x, vertices[2].y)
             texts_with_coords.append((description, top_left, bottom_right))
-    
+
     return texts_with_coords
 
 
@@ -56,8 +58,9 @@ def remove_texts(image_bytes: bytes, texts_with_coords: typing.List[typing.Tuple
     for translated_text_with_coords in zip(translated_texts, texts_with_coords):
         if translated_text_with_coords[0] == translated_text_with_coords[1][0]:
             continue
-        image_bytes = remove_text(image_bytes, translated_text_with_coords[1][1:])
-    
+        image_bytes = remove_text(
+            image_bytes, translated_text_with_coords[1][1:])
+
     return image_bytes
 
 
@@ -79,6 +82,7 @@ def remove_text(image_bytes: bytes, coords: typing.Tuple[typing.Tuple[int, int],
     result_bytes = buffer.tobytes()
 
     return result_bytes
+
 
 def recognize_font_style(image_bytes: bytes, texts_with_coords: typing.List[typing.Tuple[str, typing.Tuple[int, int], typing.Tuple[int, int]]]) -> str:
     api_key = settings.WHATFONTIS_API_KEY
@@ -141,31 +145,32 @@ def recognize_text_color(image_bytes: bytes, coords: typing.Tuple[typing.Tuple[i
     return text_color
 
 
-def place_texts_into_image(image_bytes: bytes, texts_with_coords: typing.List[typing.Tuple[str, typing.Tuple[int, int], typing.Tuple[int, int]]], translated_texts: typing.List[str]) -> bytes:
+def place_texts_into_image(image_bytes: bytes, dpiY: float, texts_with_coords: typing.List[typing.Tuple[str, typing.Tuple[int, int], typing.Tuple[int, int]]], translated_texts: typing.List[str]) -> bytes:
     for translated_text_with_coords in zip(translated_texts, texts_with_coords):
         if translated_text_with_coords[0] == translated_text_with_coords[1][0]:
             continue
-        image_bytes = place_text_into_image(image_bytes, translated_text_with_coords[0], translated_text_with_coords[1][1:])
-    
+        image_bytes = place_text_into_image(
+            image_bytes, dpiY, translated_text_with_coords[0], translated_text_with_coords[1][1:])
+
     return image_bytes
 
 
-def place_text_into_image(image_bytes: bytes, translated_text: str, coords: typing.Tuple[typing.Tuple[int, int], typing.Tuple[int, int]]): 
+def place_text_into_image(image_bytes: bytes, dpiY: float, translated_text: str, coords: typing.Tuple[typing.Tuple[int, int], typing.Tuple[int, int]]):
     image = Image.open(io.BytesIO(image_bytes))
 
     x1, y1 = coords[0]
     x2, y2 = coords[1]
 
-    font_size = abs(y2 - y1)
+    font_size = math.ceil(abs(y2 - y1))
     font_path = os.path.join(settings.STATIC_ROOT, "calibri-regular.ttf")
 
-    text_color = recognize_text_color(image_bytes, coords)
+    text_color = (0, 0, 0)  # recognize_text_color(image_bytes, coords)
     image_with_text = image.copy()
     draw = ImageDraw.Draw(image_with_text)
     font = ImageFont.truetype(font_path, font_size)
 
     text_width, text_height = draw.textsize(translated_text, font=font)
-    
+
     text_x = x1 + (x2 - x1) // 2 - text_width // 2
     text_y = y1 + (y2 - y1) // 2 - text_height // 2
 
@@ -176,3 +181,67 @@ def place_text_into_image(image_bytes: bytes, translated_text: str, coords: typi
         image_bytes = ms.getvalue()
 
         return image_bytes
+
+
+def separate_texts_into_strings(texts_with_coords: typing.List[typing.Tuple[str, typing.Tuple[int, int], typing.Tuple[int, int]]]) -> typing.List[typing.Tuple[str, typing.Tuple[int, int], typing.Tuple[int, int]]]:
+    strings = []
+    
+    l = len(texts_with_coords)
+    current = texts_with_coords[0]
+    i = 1
+    while i < l:
+        checked = texts_with_coords[i]
+        res, new_text_with_coords = are_on_same_line(current, checked)
+        if res:
+            current = new_text_with_coords
+        else:
+            strings.append(current)
+            current = texts_with_coords[i]
+
+        i += 1
+    else:
+        strings.append(current)
+    
+    return strings
+
+
+def are_on_same_line(
+        text_with_coords_1: typing.Tuple[str, typing.Tuple[int, int], typing.Tuple[int, int]],
+        text_with_coords_2: typing.Tuple[str, typing.Tuple[int, int], typing.Tuple[int, int]]
+) -> typing.Tuple[bool, typing.Tuple[str, typing.Tuple[int, int], typing.Tuple[int, int]]]:
+    text1, *coords1 = text_with_coords_1
+    text2, *coords2 = text_with_coords_2
+
+    # x1, y1 = coords1[0]
+    # w1 = coords1[1][0] - x1
+    # h1 = coords1[1][1] - y1
+
+    # x2, y2 = coords2[0]
+    # w2 = coords2[1][0] - x2
+    # h2 = coords2[1][1] - y2
+
+    special_symbols = "{}[]()#№"
+
+    if text1 in special_symbols or text2 in special_symbols:
+        return False, ['', (-1, -1), (-1, -1)]
+
+    distance_between = abs(coords1[1][0] - coords2[0][0])
+
+    height1 = abs(coords1[0][1] - coords1[1][1])
+    height2 = abs(coords2[0][1] - coords2[1][1])
+
+    height = min(height1, height2)
+
+    new_x1 = coords1[0][0]
+    new_x2 = coords2[1][0]
+
+    new_y1 = (coords1[0][1] + coords2[0][1]) // 2
+    new_y2 = (coords1[1][1] + coords2[1][1]) // 2
+
+    new_text = ""
+    if text1[-1] in string.ascii_letters and text2[0] in string.ascii_letters:
+        new_text = text1 + ' ' + text2
+    else:
+        new_text = text1 + text2
+
+    return distance_between < height, (new_text, (new_x1, new_y1), (new_x2, new_y2))
