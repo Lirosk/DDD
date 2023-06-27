@@ -15,7 +15,6 @@ namespace ScreenTranslator
 		{
 			InitializeComponent();
 
-			this.resizablePictureBox.Owner = this;
 			this.resizablePictureBox.Worker = new();
 			this.resizablePictureBox.SuccessfulCallback = this.AfterSuccessfulResponse;
 			this.resizablePictureBox.UnsuccessfullCallback = this.AfterUnsuccessfulResponse;
@@ -52,7 +51,6 @@ namespace ScreenTranslator
 
 		private void AfterUnsuccessfulResponse()
 		{
-			this.resizablePictureBox.Image = null;
 			this.recognizedTexts = null;
 			this.translatedTexts = null;
 
@@ -318,8 +316,6 @@ namespace ScreenTranslator
 			this.Close();
 		}
 
-		private bool isWorking = false;
-
 		private void SetWorkingState()
 		{
 			this.Cursor = Cursors.WaitCursor;
@@ -328,6 +324,11 @@ namespace ScreenTranslator
 		private void SetFreeState()
 		{
 			this.Cursor = Cursors.Default;
+		}
+
+		private void notifyIcon_MouseDoubleClick_1(object sender, MouseEventArgs e)
+		{
+
 		}
 	}
 }

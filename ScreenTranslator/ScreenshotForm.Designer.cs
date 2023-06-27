@@ -33,14 +33,14 @@ namespace ScreenTranslator
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScreenshotForm));
 			this.screenshotPictureBox = new System.Windows.Forms.PictureBox();
-			this.resizablePictureBox = new ScreenTranslator.Components.ResizablePictureBox();
 			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
 			this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.resizablePictureBox = new ResizablePictureBox(this);
 			((System.ComponentModel.ISupportInitialize)(this.screenshotPictureBox)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.resizablePictureBox)).BeginInit();
 			this.contextMenuStrip.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.resizablePictureBox)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// screenshotPictureBox
@@ -56,25 +56,13 @@ namespace ScreenTranslator
 			this.screenshotPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.screenshotPictureBox_MouseMove);
 			this.screenshotPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.screenshotPictureBox_MouseUp);
 			// 
-			// resizablePictureBox
-			// 
-			this.resizablePictureBox.BackColor = System.Drawing.Color.White;
-			this.resizablePictureBox.Location = new System.Drawing.Point(125, 80);
-			this.resizablePictureBox.Margin = new System.Windows.Forms.Padding(5);
-			this.resizablePictureBox.Name = "resizablePictureBox";
-			this.resizablePictureBox.Screenshot = null;
-			this.resizablePictureBox.Size = new System.Drawing.Size(100, 50);
-			this.resizablePictureBox.TabIndex = 1;
-			this.resizablePictureBox.TabStop = false;
-			this.resizablePictureBox.Visible = false;
-			this.resizablePictureBox.Worker = null;
-			// 
 			// notifyIcon
 			// 
 			this.notifyIcon.ContextMenuStrip = this.contextMenuStrip;
 			this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
-			this.notifyIcon.Text = "notifyIcon";
+			this.notifyIcon.Text = "ScreenTranslator";
 			this.notifyIcon.Visible = true;
+			this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick_1);
 			// 
 			// contextMenuStrip
 			// 
@@ -82,21 +70,30 @@ namespace ScreenTranslator
             this.settingsToolStripMenuItem,
             this.exitToolStripMenuItem});
 			this.contextMenuStrip.Name = "contextMenuStrip";
-			this.contextMenuStrip.Size = new System.Drawing.Size(181, 70);
+			this.contextMenuStrip.Size = new System.Drawing.Size(117, 48);
 			// 
 			// settingsToolStripMenuItem
 			// 
 			this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-			this.settingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.settingsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
 			this.settingsToolStripMenuItem.Text = "Settings";
 			this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
 			this.exitToolStripMenuItem.Text = "Exit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click_1);
+			// 
+			// resizablePictureBox
+			// 
+			this.resizablePictureBox.Location = new System.Drawing.Point(8, 8);
+			this.resizablePictureBox.Name = "resizablePictureBox";
+			this.resizablePictureBox.Size = new System.Drawing.Size(100, 50);
+			this.resizablePictureBox.TabIndex = 1;
+			this.resizablePictureBox.TabStop = false;
+			this.resizablePictureBox.Visible = false;
 			// 
 			// ScreenshotForm
 			// 
@@ -118,8 +115,8 @@ namespace ScreenTranslator
 			this.Load += new System.EventHandler(this.ScreenshotForm_Load);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ScreenshotForm_KeyDown);
 			((System.ComponentModel.ISupportInitialize)(this.screenshotPictureBox)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.resizablePictureBox)).EndInit();
 			this.contextMenuStrip.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.resizablePictureBox)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -127,10 +124,10 @@ namespace ScreenTranslator
 		#endregion
 
 		private PictureBox screenshotPictureBox;
-		private ResizablePictureBox resizablePictureBox;
 		private NotifyIcon notifyIcon;
 		private ContextMenuStrip contextMenuStrip;
 		private ToolStripMenuItem settingsToolStripMenuItem;
 		private ToolStripMenuItem exitToolStripMenuItem;
+		private ResizablePictureBox resizablePictureBox;
 	}
 }

@@ -6,14 +6,16 @@ namespace ScreenTranslator.Components
 	{
 		private readonly HandleResize resize;
 		private readonly Cursor cursorOnHover;
+		private readonly Action startImageProcessing;
 
 		public const int StandardSize = 7;
 
 		public delegate void HandleResize(ResizeHandler sender);
 
-		public ResizeHandler(int x, int y, Cursor cursorOnHover, HandleResize resize, bool blockDX = false, bool blockDY = false) : base(blockDX, blockDY)
+		public ResizeHandler(int x, int y, Cursor cursorOnHover, HandleResize resize, Action startImageProcessing, bool blockDX = false, bool blockDY = false) : base(blockDX, blockDY)
 		{
 			this.resize = resize;
+			this.startImageProcessing = startImageProcessing;
 			this.Size = new Size(StandardSize, StandardSize);
 			this.BackColor = Color.White;
 			this.Location = new Point(x, y);
@@ -58,6 +60,13 @@ namespace ScreenTranslator.Components
 		{
 			base.OnMouseLeave(e);
 			this.Cursor = Cursors.Default;
+		}
+
+		protected override void OnMouseUp(MouseEventArgs e)
+		{
+			base.OnMouseUp(e);
+
+			this.startImageProcessing?.Invoke();
 		}
 	}
 }

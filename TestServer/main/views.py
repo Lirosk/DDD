@@ -21,24 +21,25 @@ class EntryPointAPIView(GenericAPIView):
             serializer = self.serializer_class(data=request.data)
             serializer.is_valid(raise_exception=True)
 
-            image_bytes = base64.b64decode(serializer.validated_data['image_bytes'])
+            source_image_bytes = base64.b64decode(serializer.validated_data['image_bytes'])
             dpiY = serializer.validated_data['dpiY']
+            translate_to_language = serializer.validated_data['translate_to_language']
 
-            texts_with_coords = utils.recognize_text_from_image(image_bytes)
+            texts_with_coords = utils.recognize_text_from_image(source_image_bytes)
             strings_with_coords = utils.separate_texts_into_strings(texts_with_coords)
-            translated_strings = utils.translate_texts(list(map(lambda x: x[0], strings_with_coords)), 'ru')
+            translated_strings = utils.translate_texts(list(map(lambda x: x[0], strings_with_coords)), translate_to_language)
 
-            image_bytes = utils.remove_texts(image_bytes, strings_with_coords, translated_strings)
-            image_bytes = utils.place_texts_into_image(image_bytes, dpiY, strings_with_coords, translated_strings)
+            image_bytes = utils.remove_texts(source_image_bytes, strings_with_coords, translated_strings)
+            image_bytes = utils.place_texts_into_image(source_image_bytes, image_bytes, dpiY, strings_with_coords, translated_strings)
 
-            image = Image.open(io.BytesIO(image_bytes))
-            draw = ImageDraw.Draw(image)
-            for text, *coords in strings_with_coords:
-                draw.rectangle(coords, outline='blue')
+            # image = Image.open(io.BytesIO(image_bytes))
+            # draw = ImageDraw.Draw(image)
+            # for text, *coords in strings_with_coords:
+            #     draw.rectangle(coords, outline='blue')
 
-            with io.BytesIO() as ms:
-                image.save(ms, "PNG")
-                image_bytes = ms.getvalue()
+            # with io.BytesIO() as ms:
+            #     image.save(ms, "PNG")
+            #     image_bytes = ms.getvalue()
 
             base64_image = base64.b64encode(image_bytes).decode('utf-8')
 

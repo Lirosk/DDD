@@ -26,12 +26,11 @@ namespace ScreenTranslator
 			this.cts = new CancellationTokenSource();
 			this.dpiY = dpiY;
 
-			task = Task.Run(StartWork, cts.Token);
+			StartWork();
 		}
 
 		public void Stop()
 		{
-			this.cts?.Cancel();
 		}
 
 		private async void StartWork()
@@ -52,6 +51,7 @@ namespace ScreenTranslator
 					var jsonContent = new JObject();
 					jsonContent["image_bytes"] = Convert.ToBase64String(imageBytes);
 					jsonContent["dpiY"] = this.dpiY;
+					jsonContent["translate_to_language"] = Languages.Items[Properties.Settings.Default.SelectedLanguage];
 
 					var jsonString = jsonContent.ToString();
 					var stringContent = new StringContent(jsonString, Encoding.UTF8, "application/json");

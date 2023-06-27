@@ -1,0 +1,150 @@
+﻿namespace ScreenTranslator
+{
+	internal static class Languages
+	{
+		public static Dictionary<string, string> Items { get; private set; } = new();
+
+		static Languages()
+		{
+			InitializeLanguages();
+		}
+
+		private static void InitializeLanguages()
+		{
+			Items.Add("Afrikaans", "af");
+			Items.Add("Albanian", "sq");
+			Items.Add("Amharic", "am");
+			Items.Add("Arabic", "ar");
+			Items.Add("Armenian", "hy");
+			Items.Add("Assamese", "as");
+			Items.Add("Aymara", "ay");
+			Items.Add("Azerbaijani", "az");
+			Items.Add("Bambara", "bm");
+			Items.Add("Belarusian", "be");
+			Items.Add("Basque", "eu");
+			Items.Add("Bengali", "bn");
+			Items.Add("Bhojpuri", "bho");
+			Items.Add("Bosnian", "bs");
+			Items.Add("Bulgarian", "bg");
+			Items.Add("Catalan", "ca");
+			Items.Add("Cebuano", "ceb");
+			Items.Add("Chinese(Simplified)", "zh - CN");
+			Items.Add("Chinese(Traditional)", "zh - TW");
+			Items.Add("Corsican", "co");
+			Items.Add("Croatian", "hr");
+			Items.Add("Czech", "cs");
+			Items.Add("Danish", "da");
+			Items.Add("Dhivehi", "dv");
+			Items.Add("Dogri", "doi");
+			Items.Add("Dutch", "nl");
+			Items.Add("English", "en");
+			Items.Add("Esperanto", "eo");
+			Items.Add("Estonian", "et");
+			Items.Add("Ewe", "ee");
+			Items.Add("Filipino(Tagalog)", "fil");
+			Items.Add("Finnish", "fi");
+			Items.Add("French", "fr");
+			Items.Add("Frisian", "fy");
+			Items.Add("Galician", "gl");
+			Items.Add("Georgian", "ka");
+			Items.Add("German", "de");
+			Items.Add("Greek", "el");
+			Items.Add("Guarani", "gn");
+			Items.Add("Gujarati", "gu");
+			Items.Add("Haitian Creole", "ht");
+			Items.Add("Hausa", "ha");
+			Items.Add("Hawaiian", "haw");
+			Items.Add("Hebrew", "he");
+			Items.Add("Hindi", "hi");
+			Items.Add("Hmong", "hmn");
+			Items.Add("Hungarian", "hu");
+			Items.Add("Icelandic", "is");
+			Items.Add("Igbo", "ig");
+			Items.Add("Ilocano", "ilo");
+			Items.Add("Indonesian", "id");
+			Items.Add("Irish", "ga");
+			Items.Add("Italian", "it");
+			Items.Add("Japanese", "ja");
+			Items.Add("Javanese", "jv");
+			Items.Add("Kannada", "kn");
+			Items.Add("Kazakh", "kk");
+			Items.Add("Khmer", "km");
+			Items.Add("Kinyarwanda", "rw");
+			Items.Add("Konkani", "gom");
+			Items.Add("Korean", "ko");
+			Items.Add("Krio", "kri");
+			Items.Add("Kurdish", "ku");
+			Items.Add("Kurdish(Sorani)", "ckb");
+			Items.Add("Kyrgyz", "ky");
+			Items.Add("Lao", "lo");
+			Items.Add("Latin", "la");
+			Items.Add("Latvian", "lv");
+			Items.Add("Lingala", "ln");
+			Items.Add("Lithuanian", "lt");
+			Items.Add("Luganda", "lg");
+			Items.Add("Luxembourgish", "lb");
+			Items.Add("Macedonian", "mk");
+			Items.Add("Maithili", "mai");
+			Items.Add("Malagasy", "mg");
+			Items.Add("Malay", "ms");
+			Items.Add("Malayalam", "ml");
+			Items.Add("Maltese", "mt");
+			Items.Add("Maori", "mi");
+			Items.Add("Marathi", "mr");
+			Items.Add("Meiteilon(Manipuri)", "mni-Mtei");
+			Items.Add("Mizo", "lus");
+			Items.Add("Mongolian", "mn");
+			Items.Add("Myanmar(Burmese)", "my");
+			Items.Add("Nepali", "ne");
+			Items.Add("Norwegian", "no");
+			Items.Add("Nyanja(Chichewa)", "ny");
+			Items.Add("Odia(Oriya)", "or");
+			Items.Add("Oromo", "om");
+			Items.Add("Pashto", "ps");
+			Items.Add("Persian", "fa");
+			Items.Add("Polish", "pl");
+			Items.Add("Portuguese(Portugal, Brazil)", "pt");
+			Items.Add("Punjabi", "pa");
+			Items.Add("Quechua", "qu");
+			Items.Add("Romanian", "ro");
+			Items.Add("Russian", "ru");
+			Items.Add("Samoan", "sm");
+			Items.Add("Sanskrit", "sa");
+			Items.Add("Scots Gaelic", "gd");
+			Items.Add("Sepedi", "nso");
+			Items.Add("Serbian", "sr");
+			Items.Add("Sesotho", "st");
+			Items.Add("Shona", "sn");
+			Items.Add("Sindhi", "sd");
+			Items.Add("Sinhala(Sinhalese)", "si");
+			Items.Add("Slovak", "sk");
+			Items.Add("Slovenian", "sl");
+			Items.Add("Somali", "so");
+			Items.Add("Spanish", "es");
+			Items.Add("Sundanese", "su");
+			Items.Add("Swahili", "sw");
+			Items.Add("Swedish", "sv");
+			Items.Add("Tagalog(Filipino)", "tl");
+			Items.Add("Tajik", "tg");
+			Items.Add("Tamil", "ta");
+			Items.Add("Tatar", "tt");
+			Items.Add("Telugu", "te");
+			Items.Add("Thai", "th");
+			Items.Add("Tigrinya", "ti");
+			Items.Add("Tsonga", "ts");
+			Items.Add("Turkish", "tr");
+			Items.Add("Turkmen", "tk");
+			Items.Add("Twi(Akan)", "ak");
+			Items.Add("Ukrainian", "uk");
+			Items.Add("Urdu", "ur");
+			Items.Add("Uyghur", "ug");
+			Items.Add("Uzbek", "uz");
+			Items.Add("Vietnamese", "vi");
+			Items.Add("Welsh", "cy");
+			Items.Add("Xhosa", "xh");
+			Items.Add("Yiddish", "yi");
+			Items.Add("Yoruba", "yo");
+			Items.Add("Zulu", "zu");
+		}
+	}
+}
